@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulyator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .calculator {
+            background: #1e1e1e;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .display {
+            background: #2d2d2d;
+            color: #00ff00;
+            font-size: 2.5em;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: right;
+            margin-bottom: 20px;
+            min-height: 60px;
+            word-wrap: break-word;
+            word-break: break-all;
+            border: 2px solid #667eea;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 20px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .number {
+            background: #3d3d3d;
+            color: white;
+        }
+
+        .number:hover {
+            background: #4d4d4d;
+            transform: scale(1.05);
+        }
+
+        .operator {
+            background: #667eea;
+            color: white;
+        }
+
+        .operator:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .equal {
+            background: #00ff00;
+            color: #000;
+            grid-column: span 2;
+        }
+
+        .equal:hover {
+            background: #00dd00;
+            transform: scale(1.05);
+        }
+
+        .clear {
+            background: #ff4444;
+            color: white;
+            grid-column: span 2;
+        }
+
+        .clear:hover {
+            background: #dd3333;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 500px) {
+            .calculator {
+                padding: 15px;
+            }
+
+            button {
+                padding: 15px;
+                font-size: 1.2em;
+            }
+
+            .display {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="clear" onclick="clearDisplay()">C</button>
+            <button class="operator" onclick="appendOperator('/')">&divide;</button>
+            <button class="operator" onclick="appendOperator('*')">&times;</button>
+            
+            <button class="number" onclick="appendNumber('7')">7</button>
+            <button class="number" onclick="appendNumber('8')">8</button>
+            <button class="number" onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="appendOperator('-')">-</button>
+            
+            <button class="number" onclick="appendNumber('4')">4</button>
+            <button class="number" onclick="appendNumber('5')">5</button>
+            <button class="number" onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="appendOperator('+')">+</button>
+            
+            <button class="number" onclick="appendNumber('1')">1</button>
+            <button class="number" onclick="appendNumber('2')">2</button>
+            <button class="number" onclick="appendNumber('3')">3</button>
+            <button class="operator" onclick="appendOperator('.')">,</button>
+            
+            <button class="number" onclick="appendNumber('0')" style="grid-column: span 2;">0</button>
+            <button class="operator" onclick="deleteLastChar()">⌫</button>
+            
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let display = document.getElementById('display');
+        let currentValue = '0';
+        let previousValue = '';
+        let operation = '';
+        let shouldResetDisplay = false;
+
+        function appendNumber(number) {
+            if (shouldResetDisplay) {
+                currentValue = number;
+                shouldResetDisplay = false;
+            } else {
+                if (currentValue === '0' && number !== '.') {
+                    currentValue = number;
+                } else {
+                    currentValue += number;
+                }
+            }
+            updateDisplay();
+        }
+
+        function appendOperator(op) {
+            if (operation !== '' && !shouldResetDisplay) {
+                calculate();
+            }
+            previousValue = currentValue;
+            operation = op;
+            shouldResetDisplay = true;
+        }
+
+        function calculate() {
+            if (operation === '' || shouldResetDisplay) return;
+
+            let result;
+            const prev = parseFloat(previousValue);
+            const current = parseFloat(currentValue);
+
+            switch(operation) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = current !== 0 ? prev / current : 'Xato!';
+                    break;
+                default:
+                    return;
+            }
+
+            currentValue = result.toString();
+            operation = '';
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        function clearDisplay() {
+            currentValue = '0';
+            previousValue = '';
+            operation = '';
+            shouldResetDisplay = false;
+            updateDisplay();
+        }
+
+        function deleteLastChar() {
+            if (currentValue.length > 1) {
+                currentValue = currentValue.slice(0, -1);
+            } else {
+                currentValue = '0';
+            }
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            display.textContent = currentValue;
+        }
+    </script>
+</body>
+</html>
